@@ -35,5 +35,5 @@ Once a token is acquired it is passed into the CLI either as a flag parameter `-
 ```
 # Design
 See the following image for the logic flow of the CLI
-![alt text](theo-sdk.png "Title")
+![alt text](theo-sdk.png)
 
