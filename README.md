@@ -22,6 +22,10 @@ Theo-sdk is a CLI which runs API calls to the [Lord of the Rings API](https://th
 Note that the python3 script also can run off a shebang.
 ```./app.py --creds-json=creds.json --movie```
 
+## Run unittests
+
+```python3 -m unittest app_test.py```
+
 # Prereqs
 The following prereqs are needed in order to test and use the theo-sdk CLI.
 	
