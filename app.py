@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 """Python SDK for Lord of the Rings API movie endpoint.
 
 This CLI executes calls to the Lord of the Rings API 
@@ -9,7 +11,7 @@ movie endpoint which covers the following:
 
 """
 
-from typing import Optional,List
+from typing import Optional,List,Dict,Any
 
 import argparse
 import logging
@@ -22,8 +24,19 @@ API_PREFIX = "https://the-one-api.dev/v2"
 
 def list_movies(header: dict,
                 search_filter: Optional[str] = None,
-                field_filter: Optional[List[str]] = None):
-    """Lists movies with search filter and field filter."""
+                field_filter: Optional[List[str]] = None) -> List[Any]:
+    """Lists movies with search filter and field filter.
+    
+       Args:
+        header: request header 
+        search_filter: comma separated key,value for search filtering 
+        field_filter: comma separated fields to retreive from results
+
+      Raises:
+        ValueError if search field is incorrectly formatted
+    
+      Returns list of records of movies
+    """
     endpoint = "/movie/"
     request = _make_api_request(header, endpoint)
     result = []
@@ -46,10 +59,18 @@ def list_movies(header: dict,
 
 def retrieve_movie(header:dict, 
                    id: str, 
-                   field_filter: Optional[List[str]] = None):
-    """Retrieves specific movie information and with field filter."""
+                   field_filter: Optional[List[str]] = None) -> Dict:
+    """Retrieves specific movie information and with field filter.
+    
+      Args:
+        header: request header 
+        id: movie_id from LOTR api
+        field_filter: comma separated fields to retreive from results
+    
+      Returns:
+        Dictionary of movie attributes
+    """
     endpoint = f"/movie/{id}/"
-    print("My endpoint" + endpoint)
     request = _make_api_request(header, endpoint)[0]
     if field_filter:
         return {key: request[key] for key in field_filter.split(",")}
@@ -58,8 +79,20 @@ def retrieve_movie(header:dict,
 
 def list_quotes(header:dict, id: str,
                 search_filter:Optional[str] =None, 
-                field_filter:Optional[List[str]] = None):
-    """Lists quotes for a movie with search filter and field filter."""
+                field_filter:Optional[List[str]] = None) -> List[Any]:
+    """Lists quotes for a movie with search filter and field filter.
+    
+      Args:
+        header: request header 
+        search_filter: comma separated key,value for search filtering 
+        field_filter: comma separated fields to retreive from results
+
+      Raises:
+        ValueError if search field is incorrectly formatted
+
+      Returns:
+        List of quotes with attributes
+    """
 
     endpoint = f"/movie/{id}/quote/"
     request = _make_api_request(header, endpoint)
@@ -79,7 +112,7 @@ def list_quotes(header:dict, id: str,
         result =[{key: old_dict[key] for key in field_filter.split(",")} for old_dict in result]
     return result
      
-def _make_api_request(header: dict, endpoint: str):
+def _make_api_request(header: dict, endpoint: str) -> Dict:
     """Executes api call at given endpoint and returns json result.
     
       Args:
@@ -88,6 +121,9 @@ def _make_api_request(header: dict, endpoint: str):
 
       Raises:
         ValueError if request status is not 200
+
+      Returns:
+        List of API records from call
     """
     endpoint = f"{API_PREFIX}{endpoint}"
     logging.info(f"Running call to {endpoint}")
@@ -99,7 +135,7 @@ def _make_api_request(header: dict, endpoint: str):
     return result.json()["docs"]
 
 
-def get_header(args:argparse.Namespace):
+def get_header(args:argparse.Namespace) ->Dict:
     """Processes CLI args for API call with authentication.
     
      Args:
@@ -107,6 +143,9 @@ def get_header(args:argparse.Namespace):
 
      Raises:
       RuntimeError if access_token or cred_file not specified
+
+     Returns:
+      Request header in the form of a dict  
     """
     if args.access_token:
         return {"Authorization": f"Bearer {args.access_token}" }
